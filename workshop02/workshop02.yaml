@@ -1,0 +1,58 @@
+---
+# NAMESPACE
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bggns
+
+---
+# DATABASE POD
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bggdb
+  namespace: bggns
+  labels:
+    name: bggdb
+spec:
+  containers:
+  - name: bggdb
+    image: stackupiss/bgg-database:v1
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "1"
+    ports:
+      - containerPort: 3306
+
+---
+# APP DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bggapp
+  namespace: bggns
+  labels:
+    name: bggapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: bggapp
+  template:
+    metadata:
+      labels:
+        name: bggapp
+    spec:
+      containers:
+      - name: myapp
+        image: stackupiss/bgg-backend:v1
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+        ports:
+        - containerPort: 3000
+
+
+

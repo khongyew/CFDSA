@@ -1,0 +1,22 @@
+
+# create network 'mynet'
+sudo docker network create -d bridge mynet
+
+# create volume for db
+sudo docker volume create mysql
+
+# start mysql container
+sudo docker run --name mysql -d \
+    -v mysql:/var/lib/mysql \
+    --network mynet \
+    stackupiss/northwind-db:v1
+
+# start app container
+sudo docker run -d --name myapp \
+    --network mynet \
+    --env DB_HOST=mysql \
+    --env DB_USER=root \
+    --env DB_PASSWORD=changeit \
+    --env APP_PORT=3000 \
+    -p 8080:3000 \
+    stackupiss/northwind-app:v1
